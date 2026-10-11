@@ -2,18 +2,121 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RéviZen</title>
+
 <style>
-body{font-family:Arial;margin:0;background:#f5f7ff;color:#172033}
-header{background:#4b35d5;color:white;padding:30px 20px;border-radius:0 0 25px 25px}
-main{max-width:600px;margin:auto;padding:16px}
-.card{background:white;padding:20px;margin:15px 0;border-radius:20px}
-button{width:100%;padding:15px;margin:7px 0;border:0;border-radius:12px;background:#4b35d5;color:white;font-size:16px;font-weight:bold}
-textarea{width:100%;height:130px;padding:10px;border-radius:10px;border:1px solid #ddd}
-h1{margin:0}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f6ff;
+  color:#172033;
+}
+
+header{
+  background:linear-gradient(135deg,#4936d9,#7657f5);
+  color:white;
+  padding:30px 20px;
+  border-radius:0 0 28px 28px;
+}
+
+header h1{
+  margin:0;
+  font-size:30px;
+}
+
+header p{
+  margin:8px 0 0;
+}
+
+main{
+  max-width:600px;
+  margin:auto;
+  padding:16px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  margin:15px 0;
+  border-radius:20px;
+  box-shadow:0 5px 18px rgba(0,0,0,.07);
+}
+
+h2{
+  margin-top:0;
+}
+
+select,textarea{
+  width:100%;
+  padding:13px;
+  margin:8px 0 14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:15px;
+}
+
+textarea{
+  min-height:150px;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:8px;
+  border:0;
+  border-radius:13px;
+  background:#4936d9;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.result{
+  display:none;
+  line-height:1.6;
+}
+
+.badge{
+  display:inline-block;
+  background:#eeeaff;
+  color:#4936d9;
+  padding:7px 12px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.question{
+  background:#f7f8fc;
+  padding:15px;
+  margin:10px 0;
+  border-radius:13px;
+}
+
+.answer{
+  padding:10px;
+  margin:7px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  color:#777;
+  font-size:13px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -24,34 +127,198 @@ h1{margin:0}
 <main>
 
 <div class="card">
-<h2>🎓 Choisis ton niveau</h2>
-<button>BFEM</button>
-<button>Seconde</button>
-<button>Première</button>
-<button>Terminale</button>
-</div>
 
-<div class="card">
-<h2>📚 Transforme ton cours</h2>
-<p>Colle ton cours ci-dessous :</p>
-<textarea placeholder="Écris ou colle ton cours ici..."></textarea>
-<button onclick="alert('✨ Ta fiche de révision sera bientôt générée !')">
+<span class="badge">ASSISTANT DE RÉVISION</span>
+
+<h2>🎓 Commence ta révision</h2>
+
+<label>Niveau</label>
+
+<select id="niveau">
+<option>BFEM</option>
+<option>Seconde</option>
+<option>Première</option>
+<option>Terminale</option>
+</select>
+
+<label>Matière</label>
+
+<select id="matiere">
+<option>Mathématiques</option>
+<option>Français</option>
+<option>Physique-Chimie</option>
+<option>SVT</option>
+<option>Histoire-Géographie</option>
+</select>
+
+<label>Ton cours</label>
+
+<textarea id="cours"
+placeholder="Colle ici ton cours ou un chapitre..."></textarea>
+
+<button onclick="creerFiche()">
 ✨ Créer ma fiche
 </button>
+
 </div>
 
-<div class="card">
-<h2>🧠 Entraîne-toi</h2>
-<button onclick="alert('🧠 Le quiz sera bientôt disponible !')">
-Faire un quiz
+
+<div id="fiche" class="card result">
+
+<h2>📌 Ta fiche de révision</h2>
+
+<div id="ficheContenu"></div>
+
+<button onclick="afficherQuiz()">
+🧠 Faire le quiz
 </button>
+
 </div>
 
-<div class="card">
-<h2>🚀 RéviZen</h2>
-<p>Révise plus facilement avec l'intelligence artificielle.</p>
+
+<div id="quiz" class="card result">
+
+<h2>🧠 Quiz RéviZen</h2>
+
+<div class="question">
+
+<b>1. Quelle est la meilleure façon de réviser ?</b>
+
+<div class="answer" onclick="repondre(this,true)">
+Comprendre puis s'entraîner
+</div>
+
+<div class="answer" onclick="repondre(this,false)">
+Lire une seule fois le cours
+</div>
+
+<div class="answer" onclick="repondre(this,false)">
+Ne jamais faire d'exercices
+</div>
+
+</div>
+
+
+<div class="question">
+
+<b>2. Pourquoi faire des exercices ?</b>
+
+<div class="answer" onclick="repondre(this,true)">
+Pour vérifier sa compréhension
+</div>
+
+<div class="answer" onclick="repondre(this,false)">
+Pour éviter de comprendre le cours
+</div>
+
+<div class="answer" onclick="repondre(this,false)">
+Pour perdre du temps
+</div>
+
+</div>
+
+<p id="score"></p>
+
 </div>
 
 </main>
+
+<footer>
+RéviZen © 2026 — Révise plus intelligemment.
+</footer>
+
+
+<script>
+
+function creerFiche(){
+
+let niveau=document.getElementById("niveau").value;
+
+let matiere=document.getElementById("matiere").value;
+
+let cours=document.getElementById("cours").value.trim();
+
+if(cours===""){
+alert("Écris ou colle d'abord ton cours.");
+return;
+}
+
+document.getElementById("fiche").style.display="block";
+
+document.getElementById("ficheContenu").innerHTML=
+
+"<p><b>Niveau :</b> "+niveau+"</p>"+
+
+"<p><b>Matière :</b> "+matiere+"</p>"+
+
+"<hr>"+
+
+"<h3>⭐ Points importants</h3>"+
+
+"<p>"+cours+"</p>"+
+
+"<h3>💡 Méthode de révision</h3>"+
+
+"<ul>"+
+"<li>Lis attentivement le cours.</li>"+
+"<li>Repère les définitions importantes.</li>"+
+"<li>Apprends les formules et notions essentielles.</li>"+
+"<li>Fais plusieurs exercices.</li>"+
+"<li>Teste-toi sans regarder le cours.</li>"+
+"</ul>"+
+
+"<p><b>🤖 Prochaine version :</b> RéviZen utilisera une vraie IA pour analyser automatiquement ton cours.</p>";
+
+window.scrollTo({
+top:document.getElementById("fiche").offsetTop,
+behavior:"smooth"
+});
+
+}
+
+
+function afficherQuiz(){
+
+document.getElementById("quiz").style.display="block";
+
+window.scrollTo({
+top:document.getElementById("quiz").offsetTop,
+behavior:"smooth"
+});
+
+}
+
+
+let score=0;
+let reponses=0;
+
+function repondre(element,bonne){
+
+if(element.dataset.fait==="oui") return;
+
+element.dataset.fait="oui";
+
+reponses++;
+
+if(bonne){
+
+score++;
+
+element.style.background="#d9f7e5";
+
+}else{
+
+element.style.background="#ffdede";
+
+}
+
+document.getElementById("score").innerText=
+
+"Score : "+score+" / "+reponses;
+
+}
+
+</script>
+
 </body>
 </html>
